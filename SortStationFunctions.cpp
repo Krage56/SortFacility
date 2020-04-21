@@ -45,8 +45,8 @@ TwoLinkedList myLittleParser(std::string& input){
             result.pushBack(new OperatorToken(OperationName::Plus));
         }
         else if(currentStr == "-") {
-            if((result.size() == 0) || (result[result.size() - 1]->getType() == TokenType::Number) ||
-             (result[result.size() - 1]->getType() == TokenType::Function))
+            if((result.size() != 0) && ((result[result.size() - 1]->getType() == TokenType::Number) ||
+             (result[result.size() - 1]->getType() == TokenType::Function)))
             {
                 result.pushBack(new OperatorToken(OperationName::Minus));
             }
