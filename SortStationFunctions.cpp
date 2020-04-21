@@ -45,13 +45,13 @@ TwoLinkedList myLittleParser(std::string& input){
             result.pushBack(new OperatorToken(OperationName::Plus));
         }
         else if(currentStr == "-") {
-            if((result.size() != 0) && ((result[result.size() - 1]->getType() == TokenType::Number) ||
+            if((result.size() == 0) || ((result[result.size() - 1]->getType() == TokenType::Number) ||
              (result[result.size() - 1]->getType() == TokenType::Function)))
             {
-                result.pushBack(new OperatorToken(OperationName::Minus));
+                unarMinus = true;
             }
             else{
-                unarMinus = true;
+                result.pushBack(new OperatorToken(OperationName::Minus));
             }
         }
         else if(currentStr == "^") {
@@ -99,11 +99,11 @@ Queue shuntingYard(TwoLinkedList& tokens){
             }
             st.push(tokens[i]);
         }
-        if(tokens[i]->getType() == TokenType::RightBracket){
+        if(tokens[i]->getType() == TokenType::LeftBracket){
             st.push(tokens[i]);
         }
-        if(tokens[i]->getType() == TokenType::LeftBracket){
-            while(st.top()->getType() != TokenType::RightBracket){
+        if(tokens[i]->getType() == TokenType::RightBracket){
+            while(st.top()->getType() != TokenType::LeftBracket){
                 q.enqueue(st.top());
                 st.pop();
             }
@@ -112,6 +112,7 @@ Queue shuntingYard(TwoLinkedList& tokens){
             }
             q.enqueue(st.top());
             st.pop();
+            q.enqueue(tokens[i]);//fix
         }
     }
     while(!st.isEmpty()){
@@ -128,13 +129,15 @@ bool easyComparator(ValueType token, Queue& q, Stack& st){
     if(!st.isEmpty() && st.top()->getType() == TokenType::Function)
         return (st.top()->getType() != TokenType::RightBracket);
 
-    if(!st.isEmpty() && (dynamic_cast<OperatorToken*>(st.top())->getPriority() >
-        dynamic_cast<OperatorToken*>(token)->getPriority()))
+    if(!st.isEmpty() && (st.top()->getType() == TokenType::Operator) &&
+    (dynamic_cast<OperatorToken*>(st.top())->getPriority() >
+      dynamic_cast<OperatorToken*>(token)->getPriority()))
     {
         return (st.top()->getType() != TokenType::RightBracket);
     }
 
-    if((!st.isEmpty() && (dynamic_cast<OperatorToken*>(st.top())->getPriority() ==
+    if((!st.isEmpty() &&  (st.top()->getType() == TokenType::Operator) &&
+    (dynamic_cast<OperatorToken*>(st.top())->getPriority() ==
       dynamic_cast<OperatorToken*>(token)->getPriority())) &&
             (dynamic_cast<OperatorToken*>(token)->getAssociative() == Associativity::Left))
     {
