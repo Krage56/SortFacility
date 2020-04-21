@@ -30,7 +30,8 @@ public:
     std::string getCap();
     unsigned short getPriority();
     Associativity getAssociative();
-    OperationType getType();
+    OperationName getName();
+    OperationType getOperType();
     ~OperatorToken()= default;
 protected:
     OperationName _operName;

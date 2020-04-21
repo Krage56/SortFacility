@@ -45,8 +45,8 @@ TwoLinkedList myLittleParser(std::string& input){
             result.pushBack(new OperatorToken(OperationName::Plus));
         }
         else if(currentStr == "-") {
-            if((result.size() == 0) || ((result[result.size() - 1]->getType() == TokenType::Number) ||
-             (result[result.size() - 1]->getType() == TokenType::Function)))
+            if((result.size() == 0) || ((result[result.size() - 1]->getType() != TokenType::Number) &&
+             (result[result.size() - 1]->getType() != TokenType::Function)))
             {
                 unarMinus = true;
             }
@@ -110,9 +110,9 @@ Queue shuntingYard(TwoLinkedList& tokens){
             if(st.isEmpty()){
                 throw std::invalid_argument("Brackets are not balanced");
             }
-            q.enqueue(st.top());
+            //q.enqueue(st.top());
             st.pop();
-            q.enqueue(tokens[i]);//fix
+            //q.enqueue(tokens[i]);//fix
         }
     }
     while(!st.isEmpty()){
@@ -144,4 +144,60 @@ bool easyComparator(ValueType token, Queue& q, Stack& st){
         return (st.top()->getType() != TokenType::RightBracket);
     }
     return false;
+}
+
+long long calculation(Queue& outputQueue){
+    ValueType tmp;
+    std::string tmpStr = "";
+    Stack localStack;
+    while(!outputQueue.isEmpty()){
+        tmp = outputQueue.front();
+        outputQueue.dequeue();
+        if(tmp->getType() == TokenType::Number){
+            localStack.push(tmp);
+        }
+        if(tmp->getType() == TokenType::Operator){
+            short j = dynamic_cast<OperatorToken*>(tmp)->getOperType()==OperationType::Unary?1:2;
+            long long arr[2];
+            for(short i = 0; i < j; ++i){
+                arr[i] = dynamic_cast<NumToken*>(localStack.top())->getCap();
+                localStack.pop();
+            }
+            if(j == 2){
+                switch(dynamic_cast<OperatorToken*>(tmp)->getName()){
+                    case OperationName::Minus:{
+                        arr[0] -= arr[1];
+                        tmpStr = std::to_string(arr[0]);
+                        localStack.push(new NumToken(tmpStr));
+                        break;
+                    }
+                    case OperationName::Plus:{
+                        arr[0] += arr[1];
+                        tmpStr = std::to_string(arr[0]);
+                        localStack.push(new NumToken(tmpStr));
+                        break;
+                    }
+                    case OperationName::Multi :{
+                        arr[0] *= arr[1];
+                        tmpStr = std::to_string(arr[0]);
+                        localStack.push(new NumToken(tmpStr));
+                        break;
+                    }
+                    case OperationName::Dev :{
+                        arr[0] /= arr[1];
+                        tmpStr = std::to_string(arr[0]);
+                        localStack.push(new NumToken(tmpStr));
+                        break;
+                    }
+                    case OperationName::Deg :{
+                        tmpStr = std::to_string(pow(arr[0], arr[1]));
+                        localStack.push(new NumToken(tmpStr));
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
+    return dynamic_cast<NumToken*>(localStack.top())->getCap();
 }

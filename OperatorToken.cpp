@@ -28,7 +28,7 @@ OperatorToken::OperatorToken(OperationName operation){
     }
     else if(operation == OperationName::Deg){
         _operAssoc = Associativity::Right;
-        _operType = OperationType::Unary;
+        _operType = OperationType::Binary;
         _priority = 3;
     }
     else{
@@ -67,4 +67,12 @@ unsigned short OperatorToken::getPriority() {
 
 Associativity OperatorToken::getAssociative() {
     return _operAssoc;
+}
+
+OperationName OperatorToken::getName() {
+    return _operName;
+}
+
+OperationType OperatorToken::getOperType() {
+    return _operType;
 }
