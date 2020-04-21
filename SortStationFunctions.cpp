@@ -1,7 +1,6 @@
 #include "SortStationFunctions.h"
 
-TwoLinkedList/*MyVector*/ myLittleParser(std::string& input){
-//std::vector<GeneralToken*> myLittleParser(std::string& input){
+TwoLinkedList myLittleParser(std::string& input){
     size_t len = input.length();//длина прохода
     size_t ind = 0;//текущее положение на строке
     std::string tmpNum("");
@@ -9,7 +8,6 @@ TwoLinkedList/*MyVector*/ myLittleParser(std::string& input){
     std::string locTmp("-1");
     std::string currentStr("");
     TwoLinkedList result;
-    //std::vector<GeneralToken*> result;
     bool unarMinus = false;
     while(len){
         currentStr = input.substr(ind, 1);
@@ -82,4 +80,65 @@ TwoLinkedList/*MyVector*/ myLittleParser(std::string& input){
         tmpNum = "";
     }
     return result;
+}
+
+Queue shuntingYard(TwoLinkedList& tokens){
+    Queue q;
+    Stack st;
+    for(int i = 0; i < tokens.size(); ++i){
+        if(tokens[i]->getType() == TokenType::Number){
+            q.enqueue(tokens[i]);
+        }
+        if(tokens[i]->getType() == TokenType::Function){
+            st.push(tokens[i]);
+        }
+        if(tokens[i]->getType() == TokenType::Operator){
+            while(easyComparator(tokens[i], q, st)){
+                q.enqueue(st.top());
+                st.pop();
+            }
+            st.push(tokens[i]);
+        }
+        if(tokens[i]->getType() == TokenType::RightBracket){
+            st.push(tokens[i]);
+        }
+        if(tokens[i]->getType() == TokenType::LeftBracket){
+            while(st.top()->getType() != TokenType::RightBracket){
+                q.enqueue(st.top());
+                st.pop();
+            }
+            if(st.isEmpty()){
+                throw std::invalid_argument("Brackets are not balanced");
+            }
+            q.enqueue(st.top());
+            st.pop();
+        }
+    }
+    while(!st.isEmpty()){
+        if((st.top()->getType() == TokenType::LeftBracket) ||
+        (st.top()->getType() == TokenType::RightBracket)){
+            throw std::invalid_argument("Brackets are not balanced");
+        }
+        q.enqueue(st.top());
+        st.pop();
+    }
+    return q;
+}
+bool easyComparator(ValueType token, Queue& q, Stack& st){
+    if(!st.isEmpty() && st.top()->getType() == TokenType::Function)
+        return (st.top()->getType() != TokenType::RightBracket);
+
+    if(!st.isEmpty() && (dynamic_cast<OperatorToken*>(st.top())->getPriority() >
+        dynamic_cast<OperatorToken*>(token)->getPriority()))
+    {
+        return (st.top()->getType() != TokenType::RightBracket);
+    }
+
+    if((!st.isEmpty() && (dynamic_cast<OperatorToken*>(st.top())->getPriority() ==
+      dynamic_cast<OperatorToken*>(token)->getPriority())) &&
+            (dynamic_cast<OperatorToken*>(token)->getAssociative() == Associativity::Left))
+    {
+        return (st.top()->getType() != TokenType::RightBracket);
+    }
+    return false;
 }

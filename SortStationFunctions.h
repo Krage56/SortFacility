@@ -10,7 +10,8 @@
 #include <vector>
 #include "./Vector/MyVector.h"
 #include "./TwoLinkedList/Two-LinkedList.h"
-//MyVector myLittleParser(std::string& input);
+
 TwoLinkedList myLittleParser(std::string& input);
-//std::vector<GeneralToken*> myLittleParser(std::string& input);
+Queue shuntingYard(TwoLinkedList& tokens);
+bool easyComparator(ValueType token, Queue& q, Stack& st);
 #endif //SORTSTATION_SORTSTATIONFUNCTIONS_H
