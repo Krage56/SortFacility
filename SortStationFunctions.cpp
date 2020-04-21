@@ -159,8 +159,8 @@ long long calculation(Queue& outputQueue){
         if(tmp->getType() == TokenType::Operator){
             short j = dynamic_cast<OperatorToken*>(tmp)->getOperType()==OperationType::Unary?1:2;
             long long arr[2];
-            for(short i = 0; i < j; ++i){
-                arr[i] = dynamic_cast<NumToken*>(localStack.top())->getCap();
+            for(short i = j; i > 0; --i){
+                arr[i - 1] = dynamic_cast<NumToken*>(localStack.top())->getCap();
                 localStack.pop();
             }
             if(j == 2){
