@@ -11,7 +11,8 @@ TwoLinkedList myLittleParser(std::string& input){
     bool unarMinus = false;
     while(len){
         currentStr = input.substr(ind, 1);
-        if ((!tmpFunc.empty() || !tmpNum.empty()) && (
+        if ((!tmpFunc.empty() || !tmpNum.empty() ||
+        (currentStr == "(" && result.size() == 0 && unarMinus)) && (
                 (currentStr == "(") || (currentStr == ")") || (currentStr == "*") || (currentStr == "/")
                 || (currentStr == "+") || (currentStr == "-") || (currentStr == "^")))
         {
@@ -46,7 +47,8 @@ TwoLinkedList myLittleParser(std::string& input){
         }
         else if(currentStr == "-") {
             if((result.size() == 0) || ((result[result.size() - 1]->getType() != TokenType::Number) &&
-             (result[result.size() - 1]->getType() != TokenType::Function)))
+             (result[result.size() - 1]->getType() != TokenType::Function) &&
+             (result[result.size() - 1]->getType() != TokenType::RightBracket)))
             {
                 unarMinus = true;
             }
