@@ -63,7 +63,11 @@ TwoLinkedList SortStation::myLittleParser(std::string& input){
         else if(isdigit(*currentStr.c_str())){
             tmpNum += input.substr(ind, 1);
         }
-		//
+		else if (tmpNum != "" && isdigit(tmpNum[tmpNum.length() - 1]) && currentStr == "." &&
+			tmpNum.find('.') != -1) {
+			throw std::invalid_argument("Incorrect float number");
+		}
+
         else if(tmpNum != "" && isdigit(tmpNum[tmpNum.length() - 1]) && currentStr == "." &&
                 tmpNum.find('.') == -1){
             tmpNum += input.substr(ind, 1);
