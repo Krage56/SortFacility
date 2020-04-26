@@ -2,8 +2,8 @@
 #include "NumToken.h"
 
 
-long long NumToken::getCap()  const{
-    return atoll(_cap.c_str());
+double NumToken::getCap()  const{
+    return std::stod(_cap);
 }
 
 void NumToken::operator+=(std::string &str) {

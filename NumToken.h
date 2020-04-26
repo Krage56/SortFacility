@@ -20,7 +20,7 @@ protected:
 class NumToken: /*virtual*/ public GeneralNumToken{
 public:
     explicit NumToken(std::string& str);
-    long long getCap() const;
+    double getCap() const;
     void operator+=(std::string&);
     ~NumToken()= default;
 };
