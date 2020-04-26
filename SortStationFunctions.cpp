@@ -1,5 +1,6 @@
 #include "SortStationFunctions.h"
 #include <iostream>
+#include <cmath>
 TwoLinkedList myLittleParser(std::string& input){
     size_t len = input.length();//длина прохода
     size_t ind = 0;//текущее положение на строке
@@ -201,7 +202,23 @@ double calculation(Queue& outputQueue){
                 }
             }
         }
-
+        if(tmp->getType() == TokenType::Function){
+            double arg = dynamic_cast<NumToken*>(localStack.top())->getCap();
+            localStack.pop();
+            std::string tmpStr;
+            if(dynamic_cast<FuncToken*>(tmp)->getCap() == "cos"){
+                tmpStr = std::to_string(cos(arg));
+                localStack.push(new NumToken(tmpStr));
+            }
+            if(dynamic_cast<FuncToken*>(tmp)->getCap() == "sin"){
+                tmpStr = std::to_string(sin(arg));
+                localStack.push(new NumToken(tmpStr));
+            }
+            if(dynamic_cast<FuncToken*>(tmp)->getCap() == "tan"){
+                tmpStr = std::to_string(tan(arg));
+                localStack.push(new NumToken(tmpStr));
+            }
+        }
     }
     return dynamic_cast<NumToken*>(localStack.top())->getCap();
 }
