@@ -15,5 +15,5 @@
 TwoLinkedList myLittleParser(std::string& input);
 Queue shuntingYard(TwoLinkedList& tokens);
 bool easyComparator(ValueType token, Queue& q, Stack& st);
-long long calculation(Queue& outputQueue);
+double calculation(Queue& outputQueue);
 #endif //SORTSTATION_SORTSTATIONFUNCTIONS_H

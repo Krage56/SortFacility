@@ -1,5 +1,5 @@
 #include "SortStationFunctions.h"
-
+#include <iostream>
 TwoLinkedList myLittleParser(std::string& input){
     size_t len = input.length();//длина прохода
     size_t ind = 0;//текущее положение на строке
@@ -12,7 +12,7 @@ TwoLinkedList myLittleParser(std::string& input){
     while(len){
         currentStr = input.substr(ind, 1);
         if ((!tmpFunc.empty() || !tmpNum.empty() ||
-        (currentStr == "(" && result.size() == 0 && unarMinus)) && (
+        (currentStr == "(" && unarMinus)) && (
                 (currentStr == "(") || (currentStr == ")") || (currentStr == "*") || (currentStr == "/")
                 || (currentStr == "+") || (currentStr == "-") || (currentStr == "^")))
         {
@@ -60,6 +60,10 @@ TwoLinkedList myLittleParser(std::string& input){
             result.pushBack(new OperatorToken(OperationName::Deg));
         }
         else if(isdigit(*currentStr.c_str())){
+            tmpNum += input.substr(ind, 1);
+        }
+        else if(isdigit(tmpNum[tmpNum.length() - 1]) && currentStr == "." &&
+                tmpNum.find('.') == -1){
             tmpNum += input.substr(ind, 1);
         }
         else if(currentStr != " "){
@@ -112,9 +116,7 @@ Queue shuntingYard(TwoLinkedList& tokens){
             if(st.isEmpty()){
                 throw std::invalid_argument("Brackets are not balanced");
             }
-            //q.enqueue(st.top());
             st.pop();
-            //q.enqueue(tokens[i]);//fix
         }
     }
     while(!st.isEmpty()){
@@ -148,7 +150,7 @@ bool easyComparator(ValueType token, Queue& q, Stack& st){
     return false;
 }
 
-long long calculation(Queue& outputQueue){
+double calculation(Queue& outputQueue){
     ValueType tmp;
     std::string tmpStr = "";
     Stack localStack;
@@ -160,7 +162,7 @@ long long calculation(Queue& outputQueue){
         }
         if(tmp->getType() == TokenType::Operator){
             short j = dynamic_cast<OperatorToken*>(tmp)->getOperType()==OperationType::Unary?1:2;
-            long long arr[2];
+            double arr[2];
             for(short i = j; i > 0; --i){
                 arr[i - 1] = dynamic_cast<NumToken*>(localStack.top())->getCap();
                 localStack.pop();
