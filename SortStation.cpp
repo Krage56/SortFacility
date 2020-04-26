@@ -1,5 +1,6 @@
 #include "SortStation.h"
 #include <cmath>
+#include <iostream>
 TwoLinkedList SortStation::myLittleParser(std::string& input){
     size_t len = input.length();//длина прохода
     size_t ind = 0;//текущее положение на строке
@@ -90,7 +91,7 @@ TwoLinkedList SortStation::myLittleParser(std::string& input){
 
 Queue SortStation::shuntingYard(TwoLinkedList& tokens){
     Queue q;
-    Stack st;
+    Stack st(StackContainer::List);
     for(int i = 0; i < tokens.size(); ++i){
         if(tokens[i]->getType() == TokenType::Number){
             q.enqueue(tokens[i]);
@@ -143,7 +144,8 @@ bool SortStation::easyComparator(ValueType token, Queue& q, Stack& st){
     if((!st.isEmpty() &&  (st.top()->getType() == TokenType::Operator) &&
     (dynamic_cast<OperatorToken*>(st.top())->getPriority() ==
       dynamic_cast<OperatorToken*>(token)->getPriority())) &&
-            (dynamic_cast<OperatorToken*>(token)->getAssociative() == Associativity::Left))
+            (dynamic_cast<OperatorToken*>(token)->getAssociative() == Associativity::Left ||
+            dynamic_cast<OperatorToken*>(token)->getAssociative() == Associativity::All))
     {
         return (st.top()->getType() != TokenType::RightBracket);
     }
@@ -227,6 +229,6 @@ SortStation::SortStation(std::string &input) {
 }
 
 double SortStation::getResult() {
-    Queue output = shuntingYard(tokens);
-    return calculation(output);
+    Queue outputQueue = shuntingYard(tokens);
+    return calculation(outputQueue);
 }
